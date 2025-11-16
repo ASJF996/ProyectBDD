@@ -1,0 +1,31 @@
+version: "3"
+services:
+  backend:
+    build: ./backend
+    container_name: biblioteca_backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - cassandra
+
+  frontend:
+    build: ./frontend
+    container_name: biblioteca_frontend
+    ports:
+      - "5173:80"  # Si prefieres 3001:80 cámbialo
+    depends_on:
+      - backend
+
+  cassandra:
+    image: cassandra:4
+    container_name: biblioteca_cassandra
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_CLUSTER_NAME=BibliotecaCluster
+      - CASSANDRA_NUM_TOKENS=16
+      - CASSANDRA_START_RPC=true
